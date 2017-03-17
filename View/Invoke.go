@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"strings"
 )
 
 const (
@@ -85,22 +86,29 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 
 func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	Logger.Info("InvokeGetData invoke started.")
+	var logs string
 	var CHandler = NewCertHandler()
 	sigma, err := stub.GetCallerMetadata()
 	if err != nil {
+		logs = logs + "Failed getting metadata."
 		Logger.Critical("Failed getting metadata")
 		return nil, errors.New("Failed getting metadata")
 	}
 	payload, err := stub.GetPayload()
 	if err != nil {
+		logs = logs + "Failed getting payload."
 		Logger.Info("Failed getting payload")
 		return nil, errors.New("Failed getting payload")
 	}
 	binding, err := stub.GetBinding()
 	if err != nil {
+		logs = logs + "Failed getting binding."
 		Logger.Info("Failed getting binding")
 		return nil, errors.New("Failed getting binding")
 	}
+	logs = logs + fmt.Sprintf("passed sigma [% x]",sigma)
+	logs = logs + fmt.Sprintf("passed payload [% x]",payload)
+	logs = logs + fmt.Sprintf("passed binding [% x]",binding)
 
 	Logger.Critical("passed sigma [% x]", sigma)
 	Logger.Error("passed payload [% x]", payload)
@@ -111,6 +119,7 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 
 	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
 	if isAuthorized1 {
+		logs = logs + "client runed."
 		fmt.Printf("client runed.")
 		Logger.Info("system error %v", err)
 		//return nil, errors.New("user is not aurthorized to assign assets")
@@ -118,11 +127,13 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 
 	isAuthorized2, err := CHandler.IsAuthorized(stub, "assigner")
 	if isAuthorized2 {
+		logs = logs + "assigner runed."
 		fmt.Printf("assigner runed.")
 		Logger.Info("system error %v", err)
 		//return nil, errors.New("user is not aurthorized to assign assets")
 	}
-	return nil,nil
+
+	return nil, errors.New(logs)
 }
 
 
