@@ -88,7 +88,7 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 	var CHandler = NewCertHandler()
 	sigma, err := stub.GetCallerMetadata()
 	if err != nil {
-		Logger.Info("Failed getting metadata")
+		Logger.Critical("Failed getting metadata")
 		return nil, errors.New("Failed getting metadata")
 	}
 	payload, err := stub.GetPayload()
@@ -102,18 +102,23 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("Failed getting binding")
 	}
 
-	Logger.Info("passed sigma [% x]", sigma)
-	Logger.Info("passed payload [% x]", payload)
-	Logger.Info("passed binding [% x]", binding)
+	Logger.Critical("passed sigma [% x]", sigma)
+	Logger.Error("passed payload [% x]", payload)
+	Logger.Warning("passed binding [% x]", binding)
+	fmt.Println("passed sigma [% x]", sigma)
+	fmt.Println("passed payload [% x]", payload)
+	fmt.Printf("passed binding [% x]", binding)
 
 	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
 	if isAuthorized1 {
+		fmt.Printf("client runed.")
 		Logger.Info("system error %v", err)
 		//return nil, errors.New("user is not aurthorized to assign assets")
 	}
 
 	isAuthorized2, err := CHandler.IsAuthorized(stub, "assigner")
 	if isAuthorized2 {
+		fmt.Printf("assigner runed.")
 		Logger.Info("system error %v", err)
 		//return nil, errors.New("user is not aurthorized to assign assets")
 	}
