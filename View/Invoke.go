@@ -105,9 +105,9 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 		Logger.Info("Failed getting binding")
 		return nil, errors.New("Failed getting binding")
 	}
-	logs = logs + fmt.Sprintf("passed sigma [% x]",sigma)
-	logs = logs + fmt.Sprintf("passed payload [% x]",payload)
-	logs = logs + fmt.Sprintf("passed binding [% x]",binding)
+	//logs = logs + fmt.Sprintf("passed sigma [% x]",sigma)
+	//logs = logs + fmt.Sprintf("passed payload [% x]",payload)
+	//logs = logs + fmt.Sprintf("passed binding [% x]",binding)
 
 	Logger.Critical("passed sigma [% x]", sigma)
 	Logger.Error("passed payload [% x]", payload)
