@@ -106,12 +106,17 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 	Logger.Info("passed payload [% x]", payload)
 	Logger.Info("passed binding [% x]", binding)
 
-	isAuthorized, err := CHandler.IsAuthorized(stub, "client")
-	if !isAuthorized {
+	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
+	if isAuthorized1 {
 		Logger.Info("system error %v", err)
-		return nil, errors.New("user is not aurthorized to assign assets")
+		//return nil, errors.New("user is not aurthorized to assign assets")
 	}
 
+	isAuthorized2, err := CHandler.IsAuthorized(stub, "assigner")
+	if isAuthorized2 {
+		Logger.Info("system error %v", err)
+		//return nil, errors.New("user is not aurthorized to assign assets")
+	}
 	return nil,nil
 }
 

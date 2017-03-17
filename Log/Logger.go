@@ -6,4 +6,5 @@ var Logger *shim.ChaincodeLogger
 
 func init() {
 	Logger = shim.NewLogger("ChainDemo")
+	Logger.SetLevel(shim.LogDebug)
 }
