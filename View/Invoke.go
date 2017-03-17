@@ -85,6 +85,7 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 }
 
 func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	log.Info("InvokeGetData invoke started.")
 	var CHandler = NewCertHandler()
 	sigma, err := stub.GetCallerMetadata()
 	if err != nil {
