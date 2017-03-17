@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"GoOnchain/common/log"
 )
 
 const (
@@ -85,21 +84,21 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 }
 
 func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	log.Info("InvokeGetData invoke started.")
+	Logger.Info("InvokeGetData invoke started.")
 	var CHandler = NewCertHandler()
 	sigma, err := stub.GetCallerMetadata()
 	if err != nil {
-		log.Info("Failed getting metadata")
+		Logger.Info("Failed getting metadata")
 		return nil, errors.New("Failed getting metadata")
 	}
 	payload, err := stub.GetPayload()
 	if err != nil {
-		log.Info("Failed getting payload")
+		Logger.Info("Failed getting payload")
 		return nil, errors.New("Failed getting payload")
 	}
 	binding, err := stub.GetBinding()
 	if err != nil {
-		log.Info("Failed getting binding")
+		Logger.Info("Failed getting binding")
 		return nil, errors.New("Failed getting binding")
 	}
 
