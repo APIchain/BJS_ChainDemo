@@ -14,8 +14,8 @@ const (
 	FUNC_INVOKE_USER_REGIST = "InvokeUserRegist"
 	FUNC_INVOKE_USER_UPDATE = "InvokeUserUpdate"
 	//Invoke Bussiness
-	FUNC_INVOKE_GETDATA = "InvokeGetData"
-	FUNC_INVOKE_POSTDATA = "InvokePostData"
+	FUNC_INVOKE_REQUEST = "InvokeRequest"
+	FUNC_INVOKE_RESPONSE = "InvokeResponse"
 )
 
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -26,10 +26,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.InvokeUserRegist(stub, args)
 	case FUNC_INVOKE_USER_UPDATE:
 		return t.InvokeUserUpdate(stub, args)
-	case FUNC_INVOKE_GETDATA:
-		return t.InvokeGetData(stub, args)
-	case FUNC_INVOKE_POSTDATA:
-		return t.InvokePostData(stub, args)
+	case FUNC_INVOKE_REQUEST:
+		return t.InvokeRequest(stub, args)
+	case FUNC_INVOKE_RESPONSE:
+		return t.InvokeResponse(stub, args)
 	}
 	return nil, errors.New("Invalid Function Call:" + function)
 }
@@ -83,38 +83,27 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 	return nil, nil
 }
 
-func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	Logger.Info("InvokeGetData invoke started.")
+func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	Logger.Info("InvokeRequest invoke started.")
 	var logs string
 	var CHandler = NewCertHandler()
-	sigma, err := stub.GetCallerMetadata()
+	at,err:= stub.ReadCertAttribute("role")
 	if err != nil {
-		logs = logs + "Failed getting metadata."
-		Logger.Critical("Failed getting metadata")
-		return nil, errors.New("Failed getting metadata")
+		logs = logs + fmt.Sprintf("ReadCertAttribute Failed getting metadata.%s.\n",err)
 	}
-	payload, err := stub.GetPayload()
+	logs = logs + fmt.Sprintf("ReadCertAttribute at is%s.\n",at)
+	as,err:= stub.GetCallerCertificate()
 	if err != nil {
-		logs = logs + "Failed getting payload."
-		Logger.Info("Failed getting payload")
-		return nil, errors.New("Failed getting payload")
+		logs = logs + fmt.Sprintf("GetCallerCertificate Failed getting metadata.%s.\n",err)
 	}
-	binding, err := stub.GetBinding()
-	if err != nil {
-		logs = logs + "Failed getting binding."
-		Logger.Info("Failed getting binding")
-		return nil, errors.New("Failed getting binding")
-	}
-	//logs = logs + fmt.Sprintf("passed sigma [% x]",sigma)
-	//logs = logs + fmt.Sprintf("passed payload [% x]",payload)
-	//logs = logs + fmt.Sprintf("passed binding [% x]",binding)
+	logs = logs + fmt.Sprintf("GetCallerCertificate at is%s.\n",as)
 
-	Logger.Critical("passed sigma [% x]", sigma)
-	Logger.Error("passed payload [% x]", payload)
-	Logger.Warning("passed binding [% x]", binding)
-	fmt.Println("passed sigma [% x]", sigma)
-	fmt.Println("passed payload [% x]", payload)
-	fmt.Printf("passed binding [% x]", binding)
+	sigma, err := stub.GetCallerMetadata()
+		logs = logs + fmt.Sprintf("Failed getting metadata %s.\n",sigma)
+	payload, err := stub.GetPayload()
+		logs = logs + fmt.Sprintf("Failed getting payload %s.\n",payload)
+	binding, err := stub.GetBinding()
+		logs = logs + fmt.Sprintf("Failed getting binding %s.\n",binding)
 
 	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
 	if isAuthorized1 {
@@ -136,7 +125,7 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 }
 
 
-//func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+//func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 //	var hash string
 //	var publicKey string
 //	var busType string
@@ -158,7 +147,7 @@ func (t *SimpleChaincode) InvokeGetData(stub shim.ChaincodeStubInterface, args [
 //	return nil, nil
 //}
 
-func (t *SimpleChaincode) InvokePostData(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	return nil, nil
 }
