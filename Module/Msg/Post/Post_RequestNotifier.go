@@ -19,7 +19,8 @@ type Request struct {
 	Hash      string `json:"hash"`
 	PublicKey string `json:"publicKey"`
 	BusType   string `json:"busType"`
-	Timestamp string `json:"timestamp"`
+	ReqSeq string `json:"reqSeq"`
+
 }
 
 func NewRequest(stub shim.ChaincodeStubInterface, str1 string, str2 string, str3 string,str4 string) (*Request, error) {
@@ -27,7 +28,7 @@ func NewRequest(stub shim.ChaincodeStubInterface, str1 string, str2 string, str3
 		Hash:      str1,
 		PublicKey: str2,
 		BusType:   str3,
-		Timestamp: str4,
+		ReqSeq: str4,
 	}
 
 	err := acc.Put(stub)

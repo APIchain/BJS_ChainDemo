@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"BJS_ChainDemo/Module/Msg/Post"
+	"BJS_ChainDemo/Module/system"
+	"BJS_ChainDemo/Module/Role"
 )
 
 const (
@@ -199,6 +201,8 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 	var publicKey string
 	var busType string
 	var timestamp string
+	var username string
+	//TODO: username get func set
 
 	if len(args) != 4 {
 		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 6 and got %d", len(args)))
@@ -208,13 +212,35 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 	busType = args[2]
 	timestamp = args[3]
 
-	Req,err:= Post.NewRequest(stub,hash,publicKey,busType,timestamp)
+	username = t.GetUserName(stub)
+
+	reqseqno ,err:= System.DefaultReqID.GenReqID(stub)
+	if err != nil {
+		return nil,err
+	}
+	Req,err:= Post.NewRequest(stub,hash,publicKey,busType,reqseqno)
 	if err != nil {
 		return nil,err
 	}
 	Req.Post()
 
+	rt := &Role.ReqTime{
+		ReqID:       reqseqno,
+		UserName:    username,
+		BusType:      busType,
+		RequestTime: timestamp,
+	}
+	rt.Put(stub)
+	err= Control.DefaultUserMemory.AddRequest(stub,username)
+	if err != nil {
+		return nil,err
+	}
+
 	return nil, nil
+}
+
+func (t *SimpleChaincode) GetUserName(stub shim.ChaincodeStubInterface)string{
+	return nil
 }
 
 func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -235,11 +261,13 @@ func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args 
 	busType = args[4]
 	timestamp = args[5]
 
+
 	Req,err:= Post.NewResponse(stub,publicKey,respCode,respData,reqSeq,busType,timestamp)
 	if err != nil {
 		return nil,err
 	}
 	Req.Post()
+	Role.SetResTimesOrTimeoutTimes(stub,reqSeq,timestamp)
 
 	return nil, nil
 }
