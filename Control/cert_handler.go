@@ -1,8 +1,8 @@
 package Control
 
 import (
-	"errors"
 	. "BJS_ChainDemo/Log"
+	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/core/chaincode/shim/crypto/attr"
 )

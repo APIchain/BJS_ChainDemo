@@ -2,7 +2,7 @@ package Control
 
 import (
 	"BJS_ChainDemo/Log"
-	. "BJS_ChainDemo/Module/Roll"
+	. "BJS_ChainDemo/Module/Role"
 	"encoding/json"
 	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -113,6 +113,7 @@ func (u *UserMemory) CheckExist(username string) bool {
 	return false
 }
 
+//增加请求次数
 func (u *UserMemory) AddRequest(stub shim.ChaincodeStubInterface, username string) error {
 	u.lock.Lock()
 	defer u.lock.Unlock()
@@ -124,6 +125,7 @@ func (u *UserMemory) AddRequest(stub shim.ChaincodeStubInterface, username strin
 	return nil
 }
 
+//增加返答次数
 func (u *UserMemory) AddResponse(stub shim.ChaincodeStubInterface, username string) error {
 	u.lock.Lock()
 	defer u.lock.Unlock()
@@ -135,6 +137,7 @@ func (u *UserMemory) AddResponse(stub shim.ChaincodeStubInterface, username stri
 	return nil
 }
 
+//增加超时次数
 func (u *UserMemory) AddTimeOut(stub shim.ChaincodeStubInterface, username string) error {
 	u.lock.Lock()
 	defer u.lock.Unlock()

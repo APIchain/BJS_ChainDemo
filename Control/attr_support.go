@@ -1,12 +1,12 @@
 package Control
 
 import (
-"bytes"
-"crypto/x509"
-"errors"
+	"bytes"
+	"crypto/x509"
+	"errors"
 
-"github.com/hyperledger/fabric/core/crypto/attributes"
-"github.com/hyperledger/fabric/core/crypto/primitives"
+	"github.com/hyperledger/fabric/core/crypto/attributes"
+	"github.com/hyperledger/fabric/core/crypto/primitives"
 )
 
 //Attribute defines a name, value pair to be verified.

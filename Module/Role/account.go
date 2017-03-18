@@ -1,4 +1,4 @@
-package Roll
+package Role
 
 import (
 	"BJS_ChainDemo/Log"
@@ -15,6 +15,7 @@ type Account struct {
 	RequestTime      int64  `json:"RequestTime"`
 	ResponseTime     int64  `json:"ResponseTime"`
 	TimeoutTime      int64  `json:"TimeoutTime"`
+	Status           bool
 }
 
 func NewAccount(stub shim.ChaincodeStubInterface, userName string, postDataServer string, returnDataServer string) (*Account, error) {

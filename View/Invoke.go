@@ -1,7 +1,7 @@
 package View
 
 import (
-	. "BJS_ChainDemo/Control"
+	"BJS_ChainDemo/Control"
 	. "BJS_ChainDemo/Log"
 	"errors"
 	"fmt"
@@ -14,8 +14,10 @@ const (
 	FUNC_INVOKE_USER_REGIST = "InvokeUserRegist"
 	FUNC_INVOKE_USER_UPDATE = "InvokeUserUpdate"
 	//Invoke Bussiness
-	FUNC_INVOKE_REQUEST = "InvokeRequest"
+	FUNC_INVOKE_REQUEST  = "InvokeRequest"
 	FUNC_INVOKE_RESPONSE = "InvokeResponse"
+	//Set Timeout
+	FUNC_INVOKE_SETTIMEOUT = "InvokeSetTimeout"
 )
 
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -30,6 +32,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.InvokeRequest(stub, args)
 	case FUNC_INVOKE_RESPONSE:
 		return t.InvokeResponse(stub, args)
+	case FUNC_INVOKE_SETTIMEOUT:
+		return t.InvokeSetTimeout(stub, args)
 	}
 	return nil, errors.New("Invalid Function Call:" + function)
 }
@@ -40,7 +44,7 @@ func (t *SimpleChaincode) InvokeUserDelete(stub shim.ChaincodeStubInterface, arg
 		return nil, errors.New("Incorrect number of arguments. Expecting username of the person to query")
 	}
 	username = args[0]
-	err := DefaultUserMemory.DeleteFromUserMemory(stub, username)
+	err := Control.DefaultUserMemory.DeleteFromUserMemory(stub, username)
 	if err != nil {
 		Logger.Error("InvokeUserDelete Failed with username =", username, "Detail error is:", err)
 	}
@@ -58,7 +62,7 @@ func (t *SimpleChaincode) InvokeUserRegist(stub shim.ChaincodeStubInterface, arg
 	postDataServer = args[1]
 	returnDataServer = args[2]
 
-	err := DefaultUserMemory.AddToUserMemory(stub, username, postDataServer, returnDataServer)
+	err := Control.DefaultUserMemory.AddToUserMemory(stub, username, postDataServer, returnDataServer)
 	if err != nil {
 		Logger.Error("InvokeUserDelete Failed with username =", username, "Detail error is:", err)
 	}
@@ -76,7 +80,7 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 	postDataServer = args[1]
 	returnDataServer = args[2]
 
-	err := DefaultUserMemory.UpdateToUserMemory(stub, username, postDataServer, returnDataServer)
+	err := Control.DefaultUserMemory.UpdateToUserMemory(stub, username, postDataServer, returnDataServer)
 	if err != nil {
 		Logger.Error("InvokeUserDelete Failed with username =", username, "Detail error is:", err)
 	}
@@ -86,24 +90,24 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	Logger.Info("InvokeRequest invoke started.")
 	var logs string
-	var CHandler = NewCertHandler()
-	at,err:= stub.ReadCertAttribute("role")
+	var CHandler = Control.NewCertHandler()
+	at, err := stub.ReadCertAttribute("role")
 	if err != nil {
-		logs = logs + fmt.Sprintf("ReadCertAttribute Failed getting metadata.%s.\n",err)
+		logs = logs + fmt.Sprintf("ReadCertAttribute Failed getting metadata.%s.\n", err)
 	}
-	logs = logs + fmt.Sprintf("ReadCertAttribute at is%s.\n",at)
-	as,err:= stub.GetCallerCertificate()
+	logs = logs + fmt.Sprintf("ReadCertAttribute at is%s.\n", at)
+	as, err := stub.GetCallerCertificate()
 	if err != nil {
-		logs = logs + fmt.Sprintf("GetCallerCertificate Failed getting metadata.%s.\n",err)
+		logs = logs + fmt.Sprintf("GetCallerCertificate Failed getting metadata.%s.\n", err)
 	}
-	logs = logs + fmt.Sprintf("GetCallerCertificate at is%s.\n",as)
+	logs = logs + fmt.Sprintf("GetCallerCertificate at is%s.\n", as)
 
 	sigma, err := stub.GetCallerMetadata()
-		logs = logs + fmt.Sprintf("Failed getting metadata %s.\n",sigma)
+	logs = logs + fmt.Sprintf("Failed getting metadata %s.\n", sigma)
 	payload, err := stub.GetPayload()
-		logs = logs + fmt.Sprintf("Failed getting payload %s.\n",payload)
+	logs = logs + fmt.Sprintf("Failed getting payload %s.\n", payload)
 	binding, err := stub.GetBinding()
-		logs = logs + fmt.Sprintf("Failed getting binding %s.\n",binding)
+	logs = logs + fmt.Sprintf("Failed getting binding %s.\n", binding)
 
 	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
 	if isAuthorized1 {
@@ -123,7 +127,6 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 
 	return nil, errors.New(logs)
 }
-
 
 //func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 //	var hash string
@@ -149,5 +152,20 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 
 func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
+	return nil, nil
+}
+func (t *SimpleChaincode) InvokeSetTimeout(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var busType string
+	var timeoutVal string
+	if len(args) != 2 {
+		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 3 and got %d", len(args)))
+	}
+	busType = args[0]
+	timeoutVal = args[1]
+
+	err := Control.DefaultTimeoutSetting.AddOrUpdatebusType(stub, busType, timeoutVal)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 3 and got %d", len(args)))
+	}
 	return nil, nil
 }
