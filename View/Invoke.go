@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"BJS_ChainDemo/Module/Msg/Post"
 )
 
 const (
@@ -18,6 +19,8 @@ const (
 	FUNC_INVOKE_RESPONSE = "InvokeResponse"
 	//Set Timeout
 	FUNC_INVOKE_SETTIMEOUT = "InvokeSetTimeout"
+	//TestFunc
+	TestFunc = "TestFunc"
 )
 
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -34,7 +37,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.InvokeResponse(stub, args)
 	case FUNC_INVOKE_SETTIMEOUT:
 		return t.InvokeSetTimeout(stub, args)
+	case TestFunc:
+		return t.TestFunc(stub, args)
 	}
+
 	return nil, errors.New("Invalid Function Call:" + function)
 }
 
@@ -48,6 +54,18 @@ func (t *SimpleChaincode) InvokeUserDelete(stub shim.ChaincodeStubInterface, arg
 	if err != nil {
 		Logger.Error("InvokeUserDelete Failed with username =", username, "Detail error is:", err)
 	}
+	userx,err :=Control.DefaultUserMemory.GetByUserName(username)
+	if err != nil {
+		return nil,err
+	}
+
+	post :=Post.AccountReply{
+		TransType: "1",
+		Username:userx.UserName,
+		PostDataServer:userx.PostDataServer,
+		ReturnDataServer:userx.ReturnDataServer,
+	}
+	post.Post()
 	return nil, nil
 }
 
@@ -66,6 +84,19 @@ func (t *SimpleChaincode) InvokeUserRegist(stub shim.ChaincodeStubInterface, arg
 	if err != nil {
 		Logger.Error("InvokeUserDelete Failed with username =", username, "Detail error is:", err)
 	}
+
+	userx,err :=Control.DefaultUserMemory.GetByUserName(username)
+	if err != nil {
+		return nil,err
+	}
+
+	post :=Post.AccountReply{
+		TransType: "2",
+		Username:userx.UserName,
+		PostDataServer:userx.PostDataServer,
+		ReturnDataServer:userx.ReturnDataServer,
+	}
+	post.Post()
 	return nil, nil
 }
 
@@ -84,10 +115,23 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 	if err != nil {
 		Logger.Error("InvokeUserDelete Failed with username =", username, "Detail error is:", err)
 	}
+	userx,err :=Control.DefaultUserMemory.GetByUserName(username)
+	if err != nil {
+		return nil,err
+	}
+
+	post :=Post.AccountReply{
+		TransType: "3",
+		Username:userx.UserName,
+		PostDataServer:userx.PostDataServer,
+		ReturnDataServer:userx.ReturnDataServer,
+	}
+	post.Post()
 	return nil, nil
 }
 
-func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) TestFunc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//TODO: not ready
 	Logger.Info("InvokeRequest invoke started.")
 	var logs string
 	var CHandler = Control.NewCertHandler()
@@ -150,22 +194,68 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 //	return nil, nil
 //}
 
-func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var hash string
+	var publicKey string
+	var busType string
+	var timestamp string
+
+	if len(args) != 4 {
+		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 6 and got %d", len(args)))
+	}
+	hash = args[0]
+	publicKey = args[1]
+	busType = args[2]
+	timestamp = args[3]
+
+	Req,err:= Post.NewRequest(stub,hash,publicKey,busType,timestamp)
+	if err != nil {
+		return nil,err
+	}
+	Req.Post()
 
 	return nil, nil
 }
+
+func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var publicKey string
+	var respCode string
+	var respData string
+	var reqSeq string
+	var busType string
+	var timestamp string
+
+	if len(args) != 6 {
+		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 6 and got %d", len(args)))
+	}
+	publicKey = args[0]
+	respCode = args[1]
+	respData = args[2]
+	reqSeq = args[3]
+	busType = args[4]
+	timestamp = args[5]
+
+	Req,err:= Post.NewResponse(stub,publicKey,respCode,respData,reqSeq,busType,timestamp)
+	if err != nil {
+		return nil,err
+	}
+	Req.Post()
+
+	return nil, nil
+}
+
 func (t *SimpleChaincode) InvokeSetTimeout(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var busType string
 	var timeoutVal string
 	if len(args) != 2 {
-		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 3 and got %d", len(args)))
+		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 2 and got %d", len(args)))
 	}
 	busType = args[0]
 	timeoutVal = args[1]
 
 	err := Control.DefaultTimeoutSetting.AddOrUpdatebusType(stub, busType, timeoutVal)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 3 and got %d", len(args)))
+		return nil, errors.New(fmt.Sprintf("AddOrUpdatebusType failed with %s.\n",busType))
 	}
 	return nil, nil
 }

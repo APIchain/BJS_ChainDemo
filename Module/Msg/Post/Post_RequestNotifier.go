@@ -16,16 +16,18 @@ const REPLYURL = "http://127.0.0.1:5000/"
 const default_REQUEST_LIST = "Request"
 
 type Request struct {
-	Hash      string `json:"Hash"`
-	PublicKey string `json:"PublicKey"`
-	BusType   string `json:"BusType"`
+	Hash      string `json:"hash"`
+	PublicKey string `json:"publicKey"`
+	BusType   string `json:"busType"`
+	Timestamp string `json:"timestamp"`
 }
 
-func NewRequest(stub shim.ChaincodeStubInterface, str1 string, str2 string, str3 string) (*Request, error) {
+func NewRequest(stub shim.ChaincodeStubInterface, str1 string, str2 string, str3 string,str4 string) (*Request, error) {
 	acc := &Request{
 		Hash:      str1,
 		PublicKey: str2,
 		BusType:   str3,
+		Timestamp: str4,
 	}
 
 	err := acc.Put(stub)

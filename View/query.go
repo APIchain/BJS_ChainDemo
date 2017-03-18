@@ -2,9 +2,9 @@ package View
 
 import (
 	"BJS_ChainDemo/Control"
-	"BJS_ChainDemo/Module/Reply"
 	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"BJS_ChainDemo/Module/Msg/Reply"
 )
 
 const (
@@ -56,7 +56,7 @@ func (t *SimpleChaincode) QueryBusTypeTimeoutByType(stub shim.ChaincodeStubInter
 
 	user := Control.DefaultTimeoutSetting.GetTimeoutValByBusType(txtype)
 
-	msgReturn := &Reply.Msg_QueryBusTypeTimeoutByType{
+	msgReturn := &Reply.Reply_ResponseNotifier{
 		TimeoutVal: *user,
 	}
 

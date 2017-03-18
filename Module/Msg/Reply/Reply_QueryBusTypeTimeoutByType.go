@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 )
 
-type Msg_QueryBusTypeTimeoutByType struct {
+type Reply_ResponseNotifier struct {
 	TimeoutVal string `json:"timeoutVal"`
 }
 
-func (u *Msg_QueryBusTypeTimeoutByType) ToJson() ([]byte, error) {
+func (u *Reply_ResponseNotifier) ToJson() ([]byte, error) {
 	jsonRespByte, err := json.Marshal(u)
 	if err != nil {
-		Log.Logger.Error("Msg_QueryBusTypeTimeoutByType ToJson() failed.", err)
+		Log.Logger.Error("Reply_ResponseNotifier ToJson() failed.", err)
 		return nil, err
 	}
 	return jsonRespByte, nil
