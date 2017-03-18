@@ -39,7 +39,7 @@ func(rq *ReqID) GenReqID(stub shim.ChaincodeStubInterface) (string, error) {
 	rq.ReqID = rq.ReqID + 1
 	err:=rq.Put(stub)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	strx :=strconv.FormatInt(rq.ReqID, 10)
 	for len(strx) < 50{

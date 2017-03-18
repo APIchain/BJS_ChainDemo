@@ -54,10 +54,13 @@ func (t *SimpleChaincode) QueryBusTypeTimeoutByType(stub shim.ChaincodeStubInter
 		return nil, errors.New("This txtype does not exist.")
 	}
 
-	user := Control.DefaultTimeoutSetting.GetTimeoutValByBusType(txtype)
+	user,err := Control.DefaultTimeoutSetting.GetTimeoutValByBusType(txtype)
+	if err != nil {
+		return nil,err
+	}
 
 	msgReturn := &Reply.Reply_ResponseNotifier{
-		TimeoutVal: *user,
+		TimeoutVal: user,
 	}
 
 	return msgReturn.ToJson()

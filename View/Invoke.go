@@ -240,7 +240,7 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 }
 
 func (t *SimpleChaincode) GetUserName(stub shim.ChaincodeStubInterface)string{
-	return nil
+	return ""
 }
 
 func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -267,7 +267,7 @@ func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args 
 		return nil,err
 	}
 	Req.Post()
-	Role.SetResTimesOrTimeoutTimes(stub,reqSeq,timestamp)
+	Control.SetResTimesOrTimeoutTimes(stub,reqSeq,timestamp)
 
 	return nil, nil
 }

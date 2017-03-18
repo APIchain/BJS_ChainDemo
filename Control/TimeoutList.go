@@ -4,7 +4,6 @@ import (
 	"BJS_ChainDemo/Module/Role"
 	"encoding/json"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"strconv"
 )
 
 const default_Timeout_LIST = "Timeout"
@@ -42,17 +41,17 @@ func (u *TimeoutSetting) put(stub shim.ChaincodeStubInterface) error {
 	return nil
 }
 
-func (u *TimeoutSetting) GetTimeoutValByBusType(txtype string) (int64,error) {
+func (u *TimeoutSetting) GetTimeoutValByBusType(txtype string) (string,error) {
 	for _, v := range DefaultTimeoutSetting.List {
 		if txtype == v.BusType {
-			intx,err:=strconv.ParseInt(v.TimeoutVal,10,64)
-			if err != nil {
-				return 0,err
-			}
-			return intx,nil
+			//intx,err:=strconv.ParseInt(v.TimeoutVal,10,64)
+			//if err != nil {
+			//	return "",err
+			//}
+			return v.TimeoutVal,nil
 		}
 	}
-	return nil,nil
+	return "",nil
 }
 
 func (u *TimeoutSetting) CheckExist(busType string) bool {
