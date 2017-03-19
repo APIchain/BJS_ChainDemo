@@ -132,70 +132,6 @@ func (t *SimpleChaincode) InvokeUserUpdate(stub shim.ChaincodeStubInterface, arg
 	return nil, nil
 }
 
-func (t *SimpleChaincode) TestFunc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	//TODO: not ready
-	Logger.Info("InvokeRequest invoke started.")
-	var logs string
-	var CHandler = Control.NewCertHandler()
-	at, err := stub.ReadCertAttribute("role")
-	if err != nil {
-		logs = logs + fmt.Sprintf("ReadCertAttribute Failed getting metadata.%s.\n", err)
-	}
-	logs = logs + fmt.Sprintf("ReadCertAttribute at is%s.\n", at)
-	as, err := stub.GetCallerCertificate()
-	if err != nil {
-		logs = logs + fmt.Sprintf("GetCallerCertificate Failed getting metadata.%s.\n", err)
-	}
-	logs = logs + fmt.Sprintf("GetCallerCertificate at is%s.\n", as)
-
-	sigma, err := stub.GetCallerMetadata()
-	logs = logs + fmt.Sprintf("Failed getting metadata %s.\n", sigma)
-	payload, err := stub.GetPayload()
-	logs = logs + fmt.Sprintf("Failed getting payload %s.\n", payload)
-	binding, err := stub.GetBinding()
-	logs = logs + fmt.Sprintf("Failed getting binding %s.\n", binding)
-
-	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
-	if isAuthorized1 {
-		logs = logs + "client runed."
-		fmt.Printf("client runed.")
-		Logger.Info("system error %v", err)
-		//return nil, errors.New("user is not aurthorized to assign assets")
-	}
-
-	isAuthorized2, err := CHandler.IsAuthorized(stub, "assigner")
-	if isAuthorized2 {
-		logs = logs + "assigner runed."
-		fmt.Printf("assigner runed.")
-		Logger.Info("system error %v", err)
-		//return nil, errors.New("user is not aurthorized to assign assets")
-	}
-
-	return nil, errors.New(logs)
-}
-
-//func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-//	var hash string
-//	var publicKey string
-//	var busType string
-//	if len(args) != 3 {
-//		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 3 and got %d", len(args)))
-//	}
-//	hash = args[0]
-//	publicKey = args[1]
-//	busType = args[2]
-//
-//	Control.PostRequest(hash, publicKey, busType)
-//
-//	account, err := attr.GetValueFrom("account", owner)
-//	if err != nil {
-//		fmt.Printf("Error reading account [%v] \n", err)
-//		return nil, fmt.Errorf("Failed fetching recipient account. Error was [%v]", err)
-//	}
-//	Control.DefaultUserMemory.AddRequest()
-//	return nil, nil
-//}
-
 func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var hash string
 	var publicKey string
@@ -224,7 +160,7 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 	}
 	Req.Post()
 
-	rt := &Role.ReqTime{
+	rt := &Role.ReqLog{
 		ReqID:       reqseqno,
 		UserName:    username,
 		BusType:      busType,
@@ -237,10 +173,6 @@ func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args [
 	}
 
 	return nil, nil
-}
-
-func (t *SimpleChaincode) GetUserName(stub shim.ChaincodeStubInterface)string{
-	return ""
 }
 
 func (t *SimpleChaincode) InvokeResponse(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -287,3 +219,72 @@ func (t *SimpleChaincode) InvokeSetTimeout(stub shim.ChaincodeStubInterface, arg
 	}
 	return nil, nil
 }
+
+func (t *SimpleChaincode) TestFunc(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//TODO: not ready
+	Logger.Info("InvokeRequest invoke started.")
+	var logs string
+	var CHandler = Control.NewCertHandler()
+	at, err := stub.ReadCertAttribute("role")
+	if err != nil {
+		logs = logs + fmt.Sprintf("ReadCertAttribute Failed getting metadata.%s.\n", err)
+	}
+	logs = logs + fmt.Sprintf("ReadCertAttribute at is%s.\n", at)
+	as, err := stub.GetCallerCertificate()
+	if err != nil {
+		logs = logs + fmt.Sprintf("GetCallerCertificate Failed getting metadata.%s.\n", err)
+	}
+	logs = logs + fmt.Sprintf("GetCallerCertificate at is%s.\n", as)
+
+	sigma, err := stub.GetCallerMetadata()
+	logs = logs + fmt.Sprintf("Failed getting metadata %s.\n", sigma)
+	payload, err := stub.GetPayload()
+	logs = logs + fmt.Sprintf("Failed getting payload %s.\n", payload)
+	binding, err := stub.GetBinding()
+	logs = logs + fmt.Sprintf("Failed getting binding %s.\n", binding)
+
+	isAuthorized1, err := CHandler.IsAuthorized(stub, "client")
+	if isAuthorized1 {
+		logs = logs + "client runed."
+		fmt.Printf("client runed.")
+		Logger.Info("system error %v", err)
+		//return nil, errors.New("user is not aurthorized to assign assets")
+	}
+
+	isAuthorized2, err := CHandler.IsAuthorized(stub, "assigner")
+	if isAuthorized2 {
+		logs = logs + "assigner runed."
+		fmt.Printf("assigner runed.")
+		Logger.Info("system error %v", err)
+		//return nil, errors.New("user is not aurthorized to assign assets")
+	}
+
+	return nil, errors.New(logs)
+}
+
+func (t *SimpleChaincode) GetUserName(stub shim.ChaincodeStubInterface)string{
+	return ""
+}
+
+
+//func (t *SimpleChaincode) InvokeRequest(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+//	var hash string
+//	var publicKey string
+//	var busType string
+//	if len(args) != 3 {
+//		return nil, errors.New(fmt.Sprintf("Incorrect number of arguments. Expecting 3 and got %d", len(args)))
+//	}
+//	hash = args[0]
+//	publicKey = args[1]
+//	busType = args[2]
+//
+//	Control.PostRequest(hash, publicKey, busType)
+//
+//	account, err := attr.GetValueFrom("account", owner)
+//	if err != nil {
+//		fmt.Printf("Error reading account [%v] \n", err)
+//		return nil, fmt.Errorf("Failed fetching recipient account. Error was [%v]", err)
+//	}
+//	Control.DefaultUserMemory.AddRequest()
+//	return nil, nil
+//}

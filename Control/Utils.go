@@ -7,7 +7,7 @@ import (
 )
 
 func SetResTimesOrTimeoutTimes(stub shim.ChaincodeStubInterface,reqID string,ResponseTime string)error{
-	Req,err := Role.ReqTimeGetbyReqID(stub,reqID)
+	Req,err := Role.ReqLogGetbyReqID(stub,reqID)
 	if err != nil {
 		return err
 	}

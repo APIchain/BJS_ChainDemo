@@ -5,18 +5,18 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-const default_REQTIME ="ReqTime"
+const default_ReqLog ="ReqLog"
 
-type ReqTime struct {
+type ReqLog struct {
 	ReqID       string `json:"ReqID"`
 	UserName     string `json:"UserName"`
 	BusType      string `json:"BusType"`
 	RequestTime string `json:"RequestTime"`
 }
 
-func  ReqTimeGetbyReqID(stub shim.ChaincodeStubInterface, reqID string)(*ReqTime,error){
-	ubs := new(ReqTime)
-	key := default_REQTIME + reqID
+func  ReqLogGetbyReqID(stub shim.ChaincodeStubInterface, reqID string)(*ReqLog,error){
+	ubs := new(ReqLog)
+	key := default_ReqLog + reqID
 	bytes, err := stub.GetState(key)
 	if err != nil {
 		return nil,err
@@ -28,12 +28,12 @@ func  ReqTimeGetbyReqID(stub shim.ChaincodeStubInterface, reqID string)(*ReqTime
 	return ubs,nil
 }
 
-func (u *ReqTime) Put(stub shim.ChaincodeStubInterface) error {
+func (u *ReqLog) Put(stub shim.ChaincodeStubInterface) error {
 	jsonRespByte, err := json.Marshal(u)
 	if err != nil {
 		return err
 	}
-	err = stub.PutState(default_REQTIME+u.ReqID, jsonRespByte)
+	err = stub.PutState(default_ReqLog+u.ReqID, jsonRespByte)
 	if err != nil {
 		return err
 	}
